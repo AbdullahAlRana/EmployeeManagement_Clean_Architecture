@@ -1,0 +1,171 @@
+﻿@model TransactionAddEditViewModel
+
+@{
+    ViewData["Title"] = "Add transaction";
+}
+
+<div class="content">
+    <div class="animated fadeIn">
+        <div class="card">
+            <div class="card-body">
+                <form asp-controller="Transaction" asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-xs-12 col-form-label ml-2">Company Name<span class="text-danger">*</span></label>
+                        <div class="col-sm-4 col-xs-12">
+                            <select asp-for="CompanyId" class="form-control" asp-items="@(new SelectList(@ViewBag.Companies,"Id", "Name"))"></select>
+                            <span asp-validation-for="CompanyId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-xs-12 col-form-label ml-2">Department<span class="text-danger">*</span></label>
+                        <div class="col-sm-4 col-xs-12">
+                            <select asp-for="DepartmentId" class="form-control" asp-items="@(new SelectList(@ViewBag.Departments,"Id", "Name"))"></select>
+                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row float-right mr-3">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#employeeModal">
+                            <i class="fas fa-plus"></i> Add Employee
+                        </button>
+                    </div>
+                    <table id="employeeTable" class="table table-striped">
+                        <tr id="employeeList">
+                            <th scope="col">
+                                EmpCode
+                            </th>
+                            <th scope="col">
+                                Name
+                            </th>
+                            <th scope="col">
+                                Phone No
+                            </th>
+                            <th scope="col">
+                                Address
+                            </th>
+                            <th scope="col">
+                                Action
+                            </th>
+                        </tr>
+                    </table>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="employeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeModalLabel">Add Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-xs-12 col-form-label ml-2">Name</label>
+                    <div class="col-sm-7 col-xs-12">
+                        <input type="text" class="form-control" id="empName" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-xs-12 col-form-label ml-2">Address</label>
+                    <div class="col-sm-7 col-xs-12">
+                        <input type="text" class="form-control" id="empAddress" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-xs-12 col-form-label ml-2">Phone No</label>
+                    <div class="col-sm-7 col-xs-12">
+                        <input type="text" class="form-control" id="empPhone" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="addEmployee()" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <script>
+
+        lastId = 0;
+        index = 0;
+        function addEmployee() {
+            
+            name = $('#empName').val();
+            address = $('#empAddress').val();
+            phone = $('#empPhone').val();
+            empCode = empCodeGenerator();
+
+            if (name === "") {
+                toastr.error('Employee should have a Name!');
+                return;
+            }
+
+            console.log(name);
+            console.log("Eita mama addemployee te " + empCode);
+            empCodeFieldId = "_" + empCode
+
+            table = $('#employeeTable').find('tbody');
+            table.append(`<tr id="`+ empCode +`">
+                                    <td scope="row">
+                                        `+ empCode + `
+                                        <input id="` + empCodeFieldId + `" name="Employees[` + (index) + `].EmpCode" value="` + empCode +`" type="hidden">
+                                    </td>
+                                    <td>
+                                        `+ name + `
+                                        <input id="Employees_`+ (index) + `__Name" name="Employees[` + (index) + `].Name" value="` + name +`" type="hidden">
+                                    </td>
+                                    <td>
+                                        `+ phone + `
+                                        <input id="Employees_`+ (index) + `__PhoneNo" name="Employees[` + (index) + `].PhoneNo" value="` + phone +`" type="hidden">
+                                    </td>
+                                    <td>
+                                        `+ address + `
+                                        <input id="Employees_`+ (index) + `__Address" name="Employees[` + (index) + `].Address" value="` + address +`" type="hidden">
+                                    </td>
+                                    <td>
+                                        <a onclick="removeEmp('`+ empCode +`')" href="#" class="btn btn-outline-secondary"><i class="fas fa-times"></i></a>
+                                    </td>
+                                </tr>`);
+
+            index++;
+            $('#empName').val("");
+            $('#empAddress').val("");
+            $('#empPhone').val("")
+            $('#employeeModal').modal('hide');
+        }
+
+        function empCodeGenerator() {
+            newCode = "";
+            newIdString = (++lastId).toString();
+            for (i = 0; i < 5 - newIdString.length; i++) {
+                newCode += "0";
+            }
+            newCode += newIdString;
+
+            return newCode;
+        }
+
+        function removeEmp(empcode) {
+            temp = "#" + empcode
+            empCodeInputField = "#" + "_" + empcode;
+            $(empCodeInputField).val("Deleted");
+            $(temp).slideUp(100);
+        }
+
+    </script>
+}
