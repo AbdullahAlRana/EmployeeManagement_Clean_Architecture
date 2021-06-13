@@ -1,7 +1,9 @@
 using EmployeeManagement.ApplicationCore.Interfaces;
 using EmployeeManagement.Infrastructure.Data;
+using EmployeeManagement.Infrastructure.Identity;
 using EmployeeManagement.WebApp.Interfaces;
 using EmployeeManagement.WebApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -35,8 +37,10 @@ namespace WebApp
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddControllersWithViews();
 
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));

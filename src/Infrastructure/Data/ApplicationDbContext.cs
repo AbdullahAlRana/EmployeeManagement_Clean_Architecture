@@ -1,12 +1,15 @@
 ﻿using EmployeeManagement.ApplicationCore.Entities.CompanyAggregate;
 using EmployeeManagement.ApplicationCore.Entities.TransactionAggregate;
+using EmployeeManagement.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace EmployeeManagement.Infrastructure.Data
 {
 
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

@@ -1,6 +1,7 @@
 ﻿using EmployeeManagement.ApplicationCore.Entities.TransactionAggregate;
 using EmployeeManagement.WebApp.Areas.Requestor.ViewModels;
 using EmployeeManagement.WebApp.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,6 +14,7 @@ using WebApp.Models;
 namespace EmployeeManagement.WebApp.Areas.Approver.Controllers
 {
     [Area("Approver")]
+    [Authorize(Roles = "Approver")]
     public class TransactionController : Controller
     {
         private readonly ICompanyService _companyService;
